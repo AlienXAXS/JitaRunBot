@@ -21,7 +21,7 @@ namespace JitaRunBot.Game
             LOSS
         }
 
-        private ShipStatusEnum _shipStatusValue;
+        private ShipStatusEnum _shipStatusValue = ShipStatusEnum.UNKNOWN;
         private ShipStatusEnum _shipStatus
         {
             get { return _shipStatusValue; }
@@ -30,7 +30,6 @@ namespace JitaRunBot.Game
                     ConsoleUtil.WriteToConsole($"Ship Status Changed To {value}", ConsoleUtil.LogLevel.INFO, ConsoleColor.Yellow);
 
                 _shipStatusValue = value;
-                
             }
         }
 
@@ -40,7 +39,8 @@ namespace JitaRunBot.Game
             DOCKED_IN_JITA,
             IN_NULLSEC,
             IN_FLIGHT,
-            UNDER_ATTACK
+            UNDER_ATTACK,
+            UNKNOWN
         }
 
         public JitaRun(LogWatcher logWatcher)
@@ -94,12 +94,6 @@ namespace JitaRunBot.Game
                 // Jumping from one system to another
                 line = line.Substring("Jumping from".Length).Trim();
                 var systemNames = line.Split(" to ");
-
-                if (_previousSystem == null)
-                {
-                    _isRunActive = true;
-                    _shipStatus = ShipStatusEnum.IN_FLIGHT;
-                }
 
                 _previousSystem = new SystemType(systemNames[0]);
                 _currentSystem = new SystemType(systemNames[1]);
@@ -156,9 +150,9 @@ namespace JitaRunBot.Game
             ConsoleUtil.WriteToConsole($"System Jump Detected: {_previousSystem.Name} -> {_currentSystem.Name} (jumps: {_totalJumps}|Active:{_isRunActive})", ConsoleUtil.LogLevel.INFO, ConsoleColor.Yellow);
 
             // Detect if we were in Jita, and we are now in a null-sec system.
-            if ( previousSystem.Name == "Jita" )
+            if ( _shipStatus == ShipStatusEnum.IN_JITA )
             {
-                if (newSystem.SecurityLevel == SystemType.SystemSecurity.NULLSEC || true)
+                if (previousSystem.SecurityLevel == SystemType.SystemSecurity.NULLSEC)
                 {
                     // We are in a Jita Run!
                     _shipStatus = ShipStatusEnum.IN_FLIGHT;
