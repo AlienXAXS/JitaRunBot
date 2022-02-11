@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <RootNamespace>JNogueira.Discord.Webhook.Client</RootNamespace>
+    <UserSecretsId>8c802d89-a6cb-43df-a09b-c89bb451e5e5</UserSecretsId>
+    <PackageId>discord-webhook-client</PackageId>
+    <Authors>Jorge Nogueira</Authors>
+    <Company />
+    <Product>Discord Webhook Client</Product>
+    <Description>A client class to send messages using a Discord webhook.</Description>
+    <PackageProjectUrl>https://github.com/jlnpinheiro/discord-webhook</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/jlnpinheiro/discord-webhook</RepositoryUrl>
+    <PackageTags>discord webhook client embeds fields message</PackageTags>
+    <Version>3.0.0</Version>
+    <PackageReleaseNotes>Bug fix and Discord field limits validations.</PackageReleaseNotes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="NotifiqueMe" Version="3.1.0" />
+     <PackageReference Include="Polly" Version="7.2.0" />
+  </ItemGroup>
+
+</Project>
