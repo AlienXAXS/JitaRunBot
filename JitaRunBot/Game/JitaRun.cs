@@ -159,6 +159,7 @@ namespace JitaRunBot.Game
                     // We are in a Jita Run!
                     _shipStatus = ShipStatusEnum.IN_FLIGHT;
                     _isRunActive = true;
+                    _totalJumps = 1; //Set our total jumps to 1 here, as we were not active earlier, and we have already done one jump.
 
                     ConsoleUtil.WriteToConsole(@"           _ _____ _______       _____  _    _ _   _ ", ConsoleUtil.LogLevel.INFO, ConsoleColor.Green);
                     ConsoleUtil.WriteToConsole(@"          | |_   _|__   __|/\   |  __ \| |  | | \ | |", ConsoleUtil.LogLevel.INFO, ConsoleColor.Green);
