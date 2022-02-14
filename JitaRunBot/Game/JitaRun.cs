@@ -140,7 +140,7 @@ namespace JitaRunBot.Game
         private void HandleCombatActionType(string line)
         {
             // Ensure that we do not set ourselves to UNDER_ATTACK if we are in jita, it's not needed and causes bugs.
-            if ( _shipStatus != ShipStatusEnum.IN_JITA || _shipStatus != ShipStatusEnum.DOCKED_IN_JITA )
+            if ( _shipStatus != ShipStatusEnum.IN_JITA && _shipStatus != ShipStatusEnum.DOCKED_IN_JITA )
                 _shipStatus = ShipStatusEnum.UNDER_ATTACK;
         }
 
@@ -159,7 +159,6 @@ namespace JitaRunBot.Game
                     // We are in a Jita Run!
                     _shipStatus = ShipStatusEnum.IN_FLIGHT;
                     _isRunActive = true;
-
 
                     ConsoleUtil.WriteToConsole(@"           _ _____ _______       _____  _    _ _   _ ", ConsoleUtil.LogLevel.INFO, ConsoleColor.Green);
                     ConsoleUtil.WriteToConsole(@"          | |_   _|__   __|/\   |  __ \| |  | | \ | |", ConsoleUtil.LogLevel.INFO, ConsoleColor.Green);
@@ -230,7 +229,7 @@ namespace JitaRunBot.Game
         private void HandleJitaLoss()
         {
             ConsoleUtil.WriteToConsole($"Jita Loss Detected.  Total jumps: {_totalJumps}", ConsoleUtil.LogLevel.INFO, ConsoleColor.Green);
-            DiscordWebHookHandler.Instance.SendDiscordMessage($"Jita Loss!\r\n\r\nTotal Jumps: {_totalJumps}\r\n\r\nTwitch Command: `!jitafail` or `!jitapod`");
+            DiscordWebHookHandler.Instance.SendDiscordMessage($"Jita Loss!\r\n\r\nTwitch Command: `!jitafail` or `!jitapod`");
             ResetJitaRun();
         }
 
