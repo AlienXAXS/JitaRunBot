@@ -49,7 +49,7 @@
                 ConsoleUtil.WriteToConsole("Ready!", ConsoleUtil.LogLevel.INFO, ConsoleColor.Green);
             }
 
-            DiscordWebHookHandler.Instance.SendDiscordMessage($"JitaRunBot started v0.3 - Configuration loaded OK!\r\nPilot: {Configuration.Handler.Instance.Config.PilotName}");
+            DiscordWebHookHandler.Instance.SendDiscordMessage($"JitaRunBot started v0.4 - Configuration loaded OK!\r\nPilot: {Configuration.Handler.Instance.Config.PilotName}");
             DiscordWebHookHandler.Instance.SendDiscordMessage($"Waiting for {Configuration.Handler.Instance.Config.PilotName} to undock from Jita.");
 
             ConsoleUtil.WriteToConsole("\r\n\r\nNotice:\r\nThis application will only detect a new Jita Run from a DOCKED state.\r\nPlease ensure you undock AFTER starting the application.\r\nWhen your ship changes to IN_JITA state you're good to go!", ConsoleUtil.LogLevel.INFO, ConsoleColor.Black, ConsoleColor.Yellow);
