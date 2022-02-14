@@ -139,7 +139,9 @@ namespace JitaRunBot.Game
 
         private void HandleCombatActionType(string line)
         {
-            _shipStatus = ShipStatusEnum.UNDER_ATTACK;
+            // Ensure that we do not set ourselves to UNDER_ATTACK if we are in jita, it's not needed and causes bugs.
+            if ( _shipStatus != ShipStatusEnum.IN_JITA || _shipStatus != ShipStatusEnum.DOCKED_IN_JITA )
+                _shipStatus = ShipStatusEnum.UNDER_ATTACK;
         }
 
         private void HandleSystemJump(SystemType previousSystem, SystemType newSystem)
