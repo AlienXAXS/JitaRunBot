@@ -1,4 +1,6 @@
-﻿namespace JitaRunBot
+﻿using JNogueira.Discord.Webhook.Client;
+
+namespace JitaRunBot
 {
     public class Program
     {
@@ -41,16 +43,39 @@
 
             if (!currentLogFileFound)
             {
-                ConsoleUtil.WriteToConsole("Nope", ConsoleUtil.LogLevel.ERROR, ConsoleColor.Red);
+                ConsoleUtil.WriteToConsole("Cannot find the latest log file!", ConsoleUtil.LogLevel.ERROR, ConsoleColor.Red);
+                _quitAppEvent.WaitOne();
+                return;
             }
             else
             {
                 ConsoleUtil.WriteToConsole($"Found game log file {_logWatcher.GetCurrentFileName()}", ConsoleUtil.LogLevel.INFO, ConsoleColor.Green);
                 ConsoleUtil.WriteToConsole("Ready!", ConsoleUtil.LogLevel.INFO, ConsoleColor.Green);
             }
+            
+            new Thread((ThreadStart)async delegate
+            {
+                var whMessage = new DiscordMessage(
+                    "",
+                    avatarUrl: "https://agngaming.com/private/jitarun/JitarunBot256x256.png",
+                    embeds: new[]
+                    {
+                        new DiscordMessageEmbed(
+                            "Jita Run Bot",
+                            description: "Bot started, configuration and status parameters below",
+                            color: 0xFAEFBA,
+                            thumbnail: new DiscordMessageEmbedThumbnail("https://agngaming.com/private/jitarun/Info256x256.png"),
+                            fields: new []
+                            {
+                                new DiscordMessageEmbedField("Bot Version", $"[v0.4.5](https://github.com/AlienXAXS/JitaRunBot/releases)"),
+                                new DiscordMessageEmbedField("Pilot Name", Configuration.Handler.Instance.Config.PilotName),
+                                new DiscordMessageEmbedField("Status", "Waiting for undock")
+                            }
+                        )
+                    });
 
-            DiscordWebHookHandler.Instance.SendDiscordMessage($"JitaRunBot started v0.4.1 - Configuration loaded OK!\r\nPilot: {Configuration.Handler.Instance.Config.PilotName}");
-            DiscordWebHookHandler.Instance.SendDiscordMessage($"Waiting for {Configuration.Handler.Instance.Config.PilotName} to undock from Jita.");
+                await DiscordWebHookHandler.Instance.GetDiscordWebHook().SendToDiscord(whMessage);
+            }).Start();
 
             ConsoleUtil.WriteToConsole("\r\n\r\nNotice:\r\nThis application will only detect a new Jita Run from a DOCKED state.\r\nPlease ensure you undock AFTER starting the application.\r\nWhen your ship changes to IN_JITA state you're good to go!", ConsoleUtil.LogLevel.INFO, ConsoleColor.Black, ConsoleColor.Yellow);
 

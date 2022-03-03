@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JNogueira.Discord.Webhook.Client;
 
 namespace JitaRunBot.Game
 {
@@ -11,6 +12,7 @@ namespace JitaRunBot.Game
         private int _totalJumps;
         private SystemType _currentSystem;
         private SystemType _previousSystem;
+        private SystemType _startingSystem;
 
         private bool _isRunActive = false;
 
@@ -161,6 +163,8 @@ namespace JitaRunBot.Game
                     _isRunActive = true;
                     _totalJumps = 1; //Set our total jumps to 1 here, as we were not active earlier, and we have already done one jump.
 
+                    _startingSystem = previousSystem;
+
                     ConsoleUtil.WriteToConsole(@"           _ _____ _______       _____  _    _ _   _ ", ConsoleUtil.LogLevel.INFO, ConsoleColor.Green);
                     ConsoleUtil.WriteToConsole(@"          | |_   _|__   __|/\   |  __ \| |  | | \ | |", ConsoleUtil.LogLevel.INFO, ConsoleColor.Green);
                     ConsoleUtil.WriteToConsole(@"          | | | |    | |  /  \  | |__) | |  | |  \| |", ConsoleUtil.LogLevel.INFO, ConsoleColor.Green);
@@ -169,7 +173,29 @@ namespace JitaRunBot.Game
                     ConsoleUtil.WriteToConsole(@"     \____ /|_____|  |_/_/    \_\_|  \_\\____/|_| \_|", ConsoleUtil.LogLevel.INFO, ConsoleColor.Green);
                     ConsoleUtil.WriteToConsole(@"                                 STARTED, HERE WE GO!", ConsoleUtil.LogLevel.INFO, ConsoleColor.Green);
 
-                    DiscordWebHookHandler.Instance.SendDiscordMessage($"Jita Run Started from {_previousSystem.Name}!");
+                    new Thread((ThreadStart)async delegate
+                    {
+                        var whMessage = new DiscordMessage(
+                            "",
+                            avatarUrl: "https://agngaming.com/private/jitarun/JitarunBot256x256.png",
+                            embeds: new[]
+                            {
+                                new DiscordMessageEmbed(
+                                    "Jita Run Bot",
+                                    description: "New JitaRun Started!",
+                                    color: 0xFAEFBA,
+                                    thumbnail: new DiscordMessageEmbedThumbnail("https://agngaming.com/private/jitarun/Info256x256.png"),
+                                    fields: new []
+                                    {
+                                        new DiscordMessageEmbedField("Pilot Name", Configuration.Handler.Instance.Config.PilotName),
+                                        new DiscordMessageEmbedField("Status", "JitaRun Started"),
+                                        new DiscordMessageEmbedField("Starting System", $"[{_startingSystem.Name}](https://evemaps.dotlan.net/system/{_startingSystem.Name})")
+                                    }
+                                )
+                            });
+
+                        await DiscordWebHookHandler.Instance.GetDiscordWebHook().SendToDiscord(whMessage);
+                    }).Start();
                 }
             }
         }
@@ -223,14 +249,66 @@ namespace JitaRunBot.Game
         private void HandleJitaWin()
         {
             ConsoleUtil.WriteToConsole($"Jita Win Detected.  Total jumps: {_totalJumps}", ConsoleUtil.LogLevel.INFO, ConsoleColor.Green);
-            DiscordWebHookHandler.Instance.SendDiscordMessage($"Jita Win!\r\n\r\nTotal Jumps: {_totalJumps}\r\n\r\nTwitch Command: `!jitawin {_totalJumps}`");
+
+            new Thread((ThreadStart)async delegate
+            {
+                var whMessage = new DiscordMessage(
+                    "",
+                    avatarUrl: "https://agngaming.com/private/jitarun/JitarunBot256x256.png",
+                    embeds: new[]
+                    {
+                        new DiscordMessageEmbed(
+                            "Jita Run Bot",
+                            description: "JitaRun Success.  Details below!",
+                            color: 0xA6FFD3,
+                            thumbnail: new DiscordMessageEmbedThumbnail("https://agngaming.com/private/jitarun/Success256x256.png"),
+                            fields: new []
+                            {
+                                new DiscordMessageEmbedField("Pilot Name", Configuration.Handler.Instance.Config.PilotName),
+                                new DiscordMessageEmbedField("Status", "JitaRun Successful"),
+                                new DiscordMessageEmbedField("Starting System", $"[{_startingSystem.Name}](https://evemaps.dotlan.net/system/{_startingSystem.Name})"),
+                                new DiscordMessageEmbedField("Total Jumps", _totalJumps.ToString()),
+                                new DiscordMessageEmbedField("Twitch Command", $"`!jitawun {_totalJumps}` OR `!jitapod`")
+                            }
+                        )
+                    });
+
+                await DiscordWebHookHandler.Instance.GetDiscordWebHook().SendToDiscord(whMessage);
+            }).Start();
+
             ResetJitaRun();
         }
 
         private void HandleJitaLoss()
         {
             ConsoleUtil.WriteToConsole($"Jita Loss Detected.  Total jumps: {_totalJumps}", ConsoleUtil.LogLevel.INFO, ConsoleColor.Green);
-            DiscordWebHookHandler.Instance.SendDiscordMessage($"Jita Loss!\r\n\r\nTwitch Command: `!jitafail` or `!jitapod`");
+
+            new Thread((ThreadStart)async delegate
+            {
+                var whMessage = new DiscordMessage(
+                    "",
+                    avatarUrl: "https://agngaming.com/private/jitarun/JitarunBot256x256.png",
+                    embeds: new[]
+                    {
+                        new DiscordMessageEmbed(
+                            "Jita Run Bot",
+                            description: "JitaRun Failure.  Details below!",
+                            color: 0xFFA6AD,
+                            thumbnail: new DiscordMessageEmbedThumbnail("https://agngaming.com/private/jitarun/Fail256x256.png"),
+                            fields: new []
+                            {
+                                new DiscordMessageEmbedField("Pilot Name", Configuration.Handler.Instance.Config.PilotName),
+                                new DiscordMessageEmbedField("Status", "JitaRun Successful"),
+                                new DiscordMessageEmbedField("Starting System", $"[{_startingSystem.Name}](https://evemaps.dotlan.net/system/{_startingSystem.Name})"),
+                                new DiscordMessageEmbedField("Total Jumps", _totalJumps.ToString()),
+                                new DiscordMessageEmbedField("Twitch Command", $"`!jitafail {_totalJumps}`")
+                            }
+                        )
+                    });
+
+                await DiscordWebHookHandler.Instance.GetDiscordWebHook().SendToDiscord(whMessage);
+            }).Start();
+
             ResetJitaRun();
         }
 

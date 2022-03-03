@@ -1,4 +1,5 @@
-﻿using JNogueira.Discord.Webhook.Client;
+﻿using System.Collections;
+using JNogueira.Discord.Webhook.Client;
 
 namespace JitaRunBot
 {
@@ -13,14 +14,9 @@ namespace JitaRunBot
         {
             discordWebhookClient = new DiscordWebhookClient(Configuration.Handler.Instance.Config.DiscordWebHookUrl);
         }
-
-        public void SendDiscordMessage(string message)
+        public DiscordWebhookClient GetDiscordWebHook()
         {
-            new Thread((ThreadStart)async delegate
-            {
-                var whMessage = new DiscordMessage(message);
-                await discordWebhookClient.SendToDiscord(whMessage);
-            }).Start();
+            return discordWebhookClient;
         }
     }
 }
