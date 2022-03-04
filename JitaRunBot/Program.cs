@@ -86,7 +86,7 @@ namespace JitaRunBot
                             thumbnail: new DiscordMessageEmbedThumbnail("https://agngaming.com/private/jitarun/Info256x256.png"),
                             fields: new []
                             {
-                                new DiscordMessageEmbedField("Bot Version", $"[v0.4.6](https://github.com/AlienXAXS/JitaRunBot/releases)"),
+                                new DiscordMessageEmbedField("Bot Version", $"[v0.4.7](https://github.com/AlienXAXS/JitaRunBot/releases)"),
                                 new DiscordMessageEmbedField("Pilot Name", Configuration.Handler.Instance.Config.PilotName),
                                 new DiscordMessageEmbedField("Status", "Waiting for undock")
                             }
