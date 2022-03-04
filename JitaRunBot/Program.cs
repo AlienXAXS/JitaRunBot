@@ -1,4 +1,9 @@
-﻿using JNogueira.Discord.Webhook.Client;
+﻿using System.Diagnostics;
+using System.Net;
+using JNogueira.Discord.Webhook.Client;
+using SimpleTCP;
+using System.Net.Sockets;
+using JitaRunBot;
 
 namespace JitaRunBot
 {
@@ -19,6 +24,20 @@ namespace JitaRunBot
         {
             AppDomain.CurrentDomain.ProcessExit += (sender, args) => HandleApplicationExitEvent();
             Console.CancelKeyPress += (sender, args) => HandleApplicationExitEvent();
+
+            SimpleTcpServer tcpServer = new SimpleTcpServer();
+            tcpServer.Start(3273);
+            ConsoleUtil.WriteToConsole("LogLiteProxy started on port 3273", ConsoleUtil.LogLevel.INFO);
+
+            tcpServer.ClientConnected += (sender, client) =>
+            {
+                ConsoleUtil.WriteToConsole($"[LogLiteProxy] Client connected {((IPEndPoint)client.Client.RemoteEndPoint).Address}", ConsoleUtil.LogLevel.INFO);
+            };
+
+            tcpServer.DataReceived += (sender, message) =>
+            {
+                Debug.Print(message.MessageString);
+            };
 
             if ( Configuration.Handler.Instance.Config.PilotName == null )
             {
@@ -67,7 +86,7 @@ namespace JitaRunBot
                             thumbnail: new DiscordMessageEmbedThumbnail("https://agngaming.com/private/jitarun/Info256x256.png"),
                             fields: new []
                             {
-                                new DiscordMessageEmbedField("Bot Version", $"[v0.4.5](https://github.com/AlienXAXS/JitaRunBot/releases)"),
+                                new DiscordMessageEmbedField("Bot Version", $"[v0.4.6](https://github.com/AlienXAXS/JitaRunBot/releases)"),
                                 new DiscordMessageEmbedField("Pilot Name", Configuration.Handler.Instance.Config.PilotName),
                                 new DiscordMessageEmbedField("Status", "Waiting for undock")
                             }
