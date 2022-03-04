@@ -252,6 +252,7 @@ namespace JitaRunBot.Game
 
             new Thread((ThreadStart)async delegate
             {
+                var tempJumpCount = _totalJumps;
                 var whMessage = new DiscordMessage(
                     "",
                     avatarUrl: "https://agngaming.com/private/jitarun/JitarunBot256x256.png",
@@ -267,8 +268,8 @@ namespace JitaRunBot.Game
                                 new DiscordMessageEmbedField("Pilot Name", Configuration.Handler.Instance.Config.PilotName),
                                 new DiscordMessageEmbedField("Status", "JitaRun Successful"),
                                 new DiscordMessageEmbedField("Starting System", $"[{_startingSystem.Name}](https://evemaps.dotlan.net/system/{_startingSystem.Name})"),
-                                new DiscordMessageEmbedField("Total Jumps", _totalJumps.ToString()),
-                                new DiscordMessageEmbedField("Twitch Command", $"`!jitawun {_totalJumps}` OR `!jitapod`")
+                                new DiscordMessageEmbedField("Total Jumps", tempJumpCount.ToString()),
+                                new DiscordMessageEmbedField("Twitch Command", $"`!jitawun {tempJumpCount}` OR `!jitapod`")
                             }
                         )
                     });
@@ -283,6 +284,7 @@ namespace JitaRunBot.Game
         {
             ConsoleUtil.WriteToConsole($"Jita Loss Detected.  Total jumps: {_totalJumps}", ConsoleUtil.LogLevel.INFO, ConsoleColor.Green);
 
+            var tempJumpCount = _totalJumps;
             new Thread((ThreadStart)async delegate
             {
                 var whMessage = new DiscordMessage(
@@ -298,10 +300,10 @@ namespace JitaRunBot.Game
                             fields: new []
                             {
                                 new DiscordMessageEmbedField("Pilot Name", Configuration.Handler.Instance.Config.PilotName),
-                                new DiscordMessageEmbedField("Status", "JitaRun Successful"),
+                                new DiscordMessageEmbedField("Status", "JitaRun Failure"),
                                 new DiscordMessageEmbedField("Starting System", $"[{_startingSystem.Name}](https://evemaps.dotlan.net/system/{_startingSystem.Name})"),
-                                new DiscordMessageEmbedField("Total Jumps", _totalJumps.ToString()),
-                                new DiscordMessageEmbedField("Twitch Command", $"`!jitafail {_totalJumps}`")
+                                new DiscordMessageEmbedField("Total Jumps", tempJumpCount.ToString()),
+                                new DiscordMessageEmbedField("Twitch Command", $"`!jitafail`")
                             }
                         )
                     });
