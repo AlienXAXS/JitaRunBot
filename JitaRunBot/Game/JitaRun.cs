@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using JNogueira.Discord.Webhook.Client;
@@ -239,20 +240,16 @@ namespace JitaRunBot.Game
 
         private bool WasPreviousSystemJitaConnected()
         {
-            var found = false;
-            foreach (var item in Configuration.Handler.Instance.Config.JitaOutGateSystems)
-                if (item.Equals(_previousSystem.Name)) found = true;
-
-            return found;
+            return Configuration.Handler.Instance.Config.JitaOutGateSystems.Any(x => x.Equals(_previousSystem.Name));
         }
 
         private void HandleJitaWin()
         {
             ConsoleUtil.WriteToConsole($"Jita Win Detected.  Total jumps: {_totalJumps}", ConsoleUtil.LogLevel.INFO, ConsoleColor.Green);
 
+            var tempJumpCount = _totalJumps;
             new Thread((ThreadStart)async delegate
             {
-                var tempJumpCount = _totalJumps;
                 var whMessage = new DiscordMessage(
                     "",
                     avatarUrl: "https://agngaming.com/private/jitarun/JitarunBot256x256.png",
@@ -269,13 +266,16 @@ namespace JitaRunBot.Game
                                 new DiscordMessageEmbedField("Status", "JitaRun Successful"),
                                 new DiscordMessageEmbedField("Starting System", $"[{_startingSystem.Name}](https://evemaps.dotlan.net/system/{_startingSystem.Name})"),
                                 new DiscordMessageEmbedField("Total Jumps", tempJumpCount.ToString()),
-                                new DiscordMessageEmbedField("Twitch Command", $"`!jitawun {tempJumpCount}` OR `!jitapod`")
+                                new DiscordMessageEmbedField("Twitch Command", $"`!jitawin {tempJumpCount}` OR `!jitapod`")
                             }
                         )
                     });
 
                 await DiscordWebHookHandler.Instance.GetDiscordWebHook().SendToDiscord(whMessage);
-            }).Start();
+            })
+            {
+                IsBackground = true,
+            }.Start();
 
             ResetJitaRun();
         }
@@ -309,7 +309,10 @@ namespace JitaRunBot.Game
                     });
 
                 await DiscordWebHookHandler.Instance.GetDiscordWebHook().SendToDiscord(whMessage);
-            }).Start();
+            })
+            {
+                IsBackground = true,
+            }.Start();
 
             ResetJitaRun();
         }
