@@ -15,13 +15,10 @@ namespace JitaRunBot.Twitch
 {
     internal class TwitchCallbackHandler
     {
-        private string _twitchApplicationId = "4zj6ekjb1e6xmlv3m4jmzwi7vm3b5m";
         private bool _hasRan = false;
-
         private string _clientId = "4zj6ekjb1e6xmlv3m4jmzwi7vm3b5m";
 
         private HttpServer _httpServer;
-
         private readonly List<string> _scopes = new List<string>()
             { "chat:edit", "chat:read" };
 
@@ -64,7 +61,7 @@ namespace JitaRunBot.Twitch
             _httpServer.Start();
 
             myProcess.StartInfo.UseShellExecute = true;
-            myProcess.StartInfo.FileName = $"https://id.twitch.tv/oauth2/authorize?response_type=token&client_id={_twitchApplicationId}&redirect_uri=http://localhost:57754/oauth/callback&scope={String.Join("+", _scopes)}";
+            myProcess.StartInfo.FileName = $"https://id.twitch.tv/oauth2/authorize?response_type=token&client_id={_clientId}&redirect_uri=http://localhost:57754/oauth/callback&scope={String.Join("+", _scopes)}";
             myProcess.Start();
 
             TaskEx.WaitUntil(() => _hasRan).Wait();
