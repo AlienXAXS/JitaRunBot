@@ -11,13 +11,12 @@ namespace LogLiteProxy
         static void Main(string[] args)
         {
 
-            Console.WriteLine("Startup Parameters: ");
-            foreach (var arg in args)
+            Console.WriteLine("Ready");
+            
+            while (true)
             {
-                Console.WriteLine(arg);
-            }
 
-            Console.ReadLine();
+            }
         }
     }
 }

@@ -9,8 +9,10 @@ namespace JitaRunBot.Configuration
 {
     public class Handler
     {
-        public static Handler Instance = _instance ?? (_instance = new Handler());
-        private static readonly Handler _instance;
+        public static Handler Instance = _instance ??= new Handler();
+        private static readonly Handler? _instance;
+
+        private int ConfigVersion = 2;
 
         public Config Config = new Config();
 
@@ -51,9 +53,27 @@ namespace JitaRunBot.Configuration
                     if (File.Exists(FullPath))
                     {
                         Config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(FullPath));
+
+                        // Check if the config version has changed, if so we save the new file.
+                        if ( Config.ConfigVersion != ConfigVersion )
+                        {
+                            ConsoleUtil.WriteToConsole("Warning: Configuration version change detected, please ensure new elements are filled in!", ConsoleUtil.LogLevel.WARN);
+                            Save();
+                        }
+
                     } else
                     {
                         // Create the file if it does not exist, for formatting help.
+                        Config.JitaOutGateSystems = new List<string>()
+                        {
+                            "Ikuchi",
+                            "Sobaseki",
+                            "Muvolailen",
+                            "Maurasi",
+                            "New Caldari",
+                            "Niyabainen",
+                            "Perimeter"
+                        };
                         Save();
                     }
                 }
@@ -63,12 +83,13 @@ namespace JitaRunBot.Configuration
             }
         }
 
-        private void Save()
+        public void Save()
         {
             try
             {
                 if (Directory.Exists(RootPath))
                 {
+                    Config.ConfigVersion = ConfigVersion;
                     File.WriteAllText(FullPath, JsonConvert.SerializeObject(Config, Formatting.Indented));
                 }
             } catch (Exception ex)
@@ -81,18 +102,38 @@ namespace JitaRunBot.Configuration
     [Serializable]
     public class Config
     {
+        public int? ConfigVersion { get; set; }
         public string? PilotName { get; set;}
         public string? DiscordWebHookUrl { get; set; }
 
-        public List<string> JitaOutGateSystems = new List<string>()
+        private string? _twitchUsername;
+
+        public string? TwitchUsername
         {
-            "Ikuchi",
-            "Sobaseki",
-            "Muvolailen",
-            "Maurasi",
-            "New Caldari",
-            "Niyabainen",
-            "Perimeter"
-        };
+            get => _twitchUsername;
+            set
+            {
+                if (!string.IsNullOrEmpty(value))
+                {
+                    _twitchUsername = value;
+                    Handler.Instance?.Save();
+                }
+            }
+        }
+
+        private string? _twitchAuthToken;
+        public string? TwitchAuthToken {
+            get => _twitchAuthToken;
+            set
+            {
+                if (!string.IsNullOrEmpty(value))
+                {
+                    _twitchAuthToken = value;
+                    Handler.Instance?.Save();
+                }
+            }
+        }
+
+        public List<string>? JitaOutGateSystems;
     }
 }
