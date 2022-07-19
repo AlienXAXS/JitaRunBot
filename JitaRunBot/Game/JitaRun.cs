@@ -40,9 +40,7 @@ namespace JitaRunBot.Game
         { 
             IN_JITA,
             DOCKED_IN_JITA,
-            IN_NULLSEC,
             IN_FLIGHT,
-            UNDER_ATTACK,
             UNKNOWN
         }
 
@@ -79,7 +77,8 @@ namespace JitaRunBot.Game
                             break;
 
                         case "combat":
-                            HandleCombatActionType(actionMessage);
+                            // We no longer handle Combat because CCP log utter shite to the log file...
+                            // CCPlease... Why u so bad?
                             break;
                     }
                 }
@@ -139,22 +138,17 @@ namespace JitaRunBot.Game
                     _shipStatus = ShipStatusEnum.DOCKED_IN_JITA;
             }
         }
-
-        private void HandleCombatActionType(string line)
-        {
-            // Ensure that we do not set ourselves to UNDER_ATTACK if we are in jita, it's not needed and causes bugs.
-            if ( _shipStatus != ShipStatusEnum.IN_JITA && _shipStatus != ShipStatusEnum.DOCKED_IN_JITA )
-                _shipStatus = ShipStatusEnum.UNDER_ATTACK;
-        }
-
+        
         private void HandleSystemJump(SystemType previousSystem, SystemType newSystem)
         {
             if (_isRunActive)
                 _totalJumps++;
 
-            var statusMsg = $"System Jump Detected:\r\n{_previousSystem.Name}({(previousSystem.SecurityLevel == SystemType.SystemSecurity.NULLSEC ? "Null" : "Empire")}) To {_currentSystem.Name}({(_currentSystem.SecurityLevel == SystemType.SystemSecurity.NULLSEC ? "Null" : "Empire")})\r\nJumps: {_totalJumps} | Active:{_isRunActive} | Status:{Enum.GetName(_shipStatus)})";
+            var statusMsg = $"System Jump Detected: {_previousSystem.Name} To {_currentSystem.Name}\r\nJumps: {_totalJumps} | Status:{Enum.GetName(_shipStatus)})";
             ConsoleUtil.WriteToConsole(statusMsg, ConsoleUtil.LogLevel.INFO, ConsoleColor.Yellow);
-            DiscordWebHookHandler.Instance.GetDiscordWebHook().SendToDiscord(new DiscordMessage(statusMsg)).Wait(2000);
+
+            if ( _isRunActive )
+                DiscordWebHookHandler.Instance.GetDiscordWebHook().SendToDiscord(new DiscordMessage(statusMsg)).Wait(2000);
 
             // Detect if we were in Jita, and we are now in a null-sec system.
             if ( _shipStatus == ShipStatusEnum.IN_JITA )

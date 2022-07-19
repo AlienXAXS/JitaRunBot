@@ -18,7 +18,7 @@ namespace JitaRunBot
         private Game.LogWatcher _logWatcher;
         private Game.JitaRun _jitaRun;
 
-        private static string Version = "0.4.9";
+        private static string Version = "0.5.0";
 
         public static void Main()
         {
