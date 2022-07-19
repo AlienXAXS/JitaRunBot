@@ -264,7 +264,7 @@ namespace JitaRunBot.Game
                             {
                                 new DiscordMessageEmbedField("Pilot Name", Configuration.Handler.Instance.Config.PilotName),
                                 new DiscordMessageEmbedField("Status", "JitaRun Successful"),
-                                new DiscordMessageEmbedField("Starting System", $"[{_startingSystem.Name}](https://evemaps.dotlan.net/system/{_startingSystem.Name})"),
+                                new DiscordMessageEmbedField("Starting System", $"[{_startingSystem.Name}](https://evemaps.dotlan.net/system/{_startingSystem.Name}) ({_totalJumps} Jumps Ago)"),
                                 new DiscordMessageEmbedField("Total Jumps", tempJumpCount.ToString()),
                                 new DiscordMessageEmbedField("Twitch Command", $"`!jitawin {tempJumpCount}` OR `!jitapod`")
                             }
@@ -301,7 +301,7 @@ namespace JitaRunBot.Game
                             {
                                 new DiscordMessageEmbedField("Pilot Name", Configuration.Handler.Instance.Config.PilotName),
                                 new DiscordMessageEmbedField("Status", "JitaRun Failure"),
-                                new DiscordMessageEmbedField("Starting System", $"[{_startingSystem.Name}](https://evemaps.dotlan.net/system/{_startingSystem.Name})"),
+                                new DiscordMessageEmbedField("Starting System", $"[{_startingSystem.Name}](https://evemaps.dotlan.net/system/{_startingSystem.Name}) ({_totalJumps} Jumps Ago)"),
                                 new DiscordMessageEmbedField("Total Jumps", tempJumpCount.ToString()),
                                 new DiscordMessageEmbedField("Twitch Command", $"`!jitafail`")
                             }
