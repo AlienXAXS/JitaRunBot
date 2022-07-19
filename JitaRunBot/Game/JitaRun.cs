@@ -152,8 +152,7 @@ namespace JitaRunBot.Game
             if (_isRunActive)
                 _totalJumps++;
 
-            var statusMsg =
-                $"System Jump Detected: {_previousSystem.Name} -> {_currentSystem.Name} (jumps: {_totalJumps}|Active:{_isRunActive})";
+            var statusMsg = $"System Jump Detected:\r\n{_previousSystem.Name}({(previousSystem.SecurityLevel == SystemType.SystemSecurity.NULLSEC ? "Null" : "Empire")}) To {_currentSystem.Name}({(_currentSystem.SecurityLevel == SystemType.SystemSecurity.NULLSEC ? "Null" : "Empire")})\r\nJumps: {_totalJumps} | Active:{_isRunActive} | Status:{Enum.GetName(_shipStatus)})";
             ConsoleUtil.WriteToConsole(statusMsg, ConsoleUtil.LogLevel.INFO, ConsoleColor.Yellow);
             DiscordWebHookHandler.Instance.GetDiscordWebHook().SendToDiscord(new DiscordMessage(statusMsg)).Wait(2000);
 
