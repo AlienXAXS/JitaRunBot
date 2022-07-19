@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JitaRunBot.Game;
 
 namespace JitaRunBot.Configuration
 {
@@ -107,6 +108,18 @@ namespace JitaRunBot.Configuration
         public string? DiscordWebHookUrl { get; set; }
 
         private string? _twitchUsername;
+
+        [Serializable]
+        public class LastKnownStateCls
+        {
+            public SystemType? PreviousSystem;
+            public SystemType? CurrentSystem;
+            public SystemType? StartingSystem;
+            public int? totalJumps;
+            public string? ShipState;
+        }
+
+        public LastKnownStateCls? LastKnownState;
 
         public string? TwitchUsername
         {

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using JitaRunBot.Configuration;
 using JNogueira.Discord.Webhook.Client;
 
 namespace JitaRunBot.Game
@@ -36,7 +37,7 @@ namespace JitaRunBot.Game
             }
         }
 
-        private enum ShipStatusEnum
+        public enum ShipStatusEnum
         { 
             IN_JITA,
             DOCKED_IN_JITA,
@@ -47,6 +48,36 @@ namespace JitaRunBot.Game
         public JitaRun(LogWatcher logWatcher)
         {
             logWatcher.OnFileChanged += LogWatcher_OnFileChanged;
+
+            var lastKnownState = Configuration.Handler.Instance.Config.LastKnownState;
+            if (lastKnownState != null)
+            {
+                new Thread((ThreadStart)async delegate
+                {
+                    var whMessage = new DiscordMessage(
+                        "",
+                        avatarUrl: "https://agngaming.com/private/jitarun/JitarunBot256x256.png",
+                        embeds: new[]
+                        {
+                            new DiscordMessageEmbed(
+                                "Jita Run Bot",
+                                description: "Previous JitaRun State Found!",
+                                color: 0xFAEFBA,
+                                thumbnail: new DiscordMessageEmbedThumbnail("https://agngaming.com/private/jitarun/Info256x256.png"),
+                                fields: new []
+                                {
+                                    new DiscordMessageEmbedField("Starting System", lastKnownState.StartingSystem.Name),
+                                    new DiscordMessageEmbedField("Previous System", lastKnownState.PreviousSystem.Name),
+                                    new DiscordMessageEmbedField("Current System", lastKnownState.CurrentSystem.Name),
+                                    new DiscordMessageEmbedField("Total Jumps Done So Far", lastKnownState.totalJumps.ToString()),
+                                    new DiscordMessageEmbedField("Last Ship State", lastKnownState.ShipState)
+                                }
+                            )
+                        });
+
+                    await DiscordWebHookHandler.Instance.GetDiscordWebHook().SendToDiscord(whMessage);
+                }).Start();
+            }
         }
 
         private void LogWatcher_OnFileChanged(object source, FileContentsChanged e)
@@ -147,8 +178,16 @@ namespace JitaRunBot.Game
             var statusMsg = $"System Jump Detected: {_previousSystem.Name} To {_currentSystem.Name}\r\nJumps: {_totalJumps} | Status:{Enum.GetName(_shipStatus)})";
             ConsoleUtil.WriteToConsole(statusMsg, ConsoleUtil.LogLevel.INFO, ConsoleColor.Yellow);
 
-            if ( _isRunActive )
-                DiscordWebHookHandler.Instance.GetDiscordWebHook().SendToDiscord(new DiscordMessage(statusMsg)).Wait(2000);
+            if (_isRunActive && Configuration.Handler.Instance.Config.LastKnownState != null)
+            {
+                // Save the current state to the config file.
+                Configuration.Handler.Instance.Config.LastKnownState.CurrentSystem = _currentSystem;
+                Configuration.Handler.Instance.Config.LastKnownState.PreviousSystem = _previousSystem;
+                Configuration.Handler.Instance.Config.LastKnownState.StartingSystem = _startingSystem;
+                Configuration.Handler.Instance.Config.LastKnownState.totalJumps = _totalJumps;
+                Configuration.Handler.Instance.Config.LastKnownState.ShipState = Enum.GetName(_shipStatus);
+                Configuration.Handler.Instance.Save();
+            }
 
             // Detect if we were in Jita, and we are now in a null-sec system.
             if ( _shipStatus == ShipStatusEnum.IN_JITA )
@@ -169,6 +208,8 @@ namespace JitaRunBot.Game
                     ConsoleUtil.WriteToConsole(@"     | |__| |_| |_   | |/ ____ \| | \ \| |__| | |\  |", ConsoleUtil.LogLevel.INFO, ConsoleColor.Green);
                     ConsoleUtil.WriteToConsole(@"     \____ /|_____|  |_/_/    \_\_|  \_\\____/|_| \_|", ConsoleUtil.LogLevel.INFO, ConsoleColor.Green);
                     ConsoleUtil.WriteToConsole(@"                                 STARTED, HERE WE GO!", ConsoleUtil.LogLevel.INFO, ConsoleColor.Green);
+
+                    Configuration.Handler.Instance.Config.LastKnownState = new Config.LastKnownStateCls();
 
                     new Thread((ThreadStart)async delegate
                     {
@@ -313,10 +354,17 @@ namespace JitaRunBot.Game
             ResetJitaRun();
         }
 
+        private void ResetLastKnownState()
+        {
+            Configuration.Handler.Instance.Config.LastKnownState = null;
+            Configuration.Handler.Instance.Save();
+        }
+
         private void ResetJitaRun()
         {
             _totalJumps = 0;
             _isRunActive = false;
+            ResetLastKnownState();
             ConsoleUtil.WriteToConsole("Full Jitarun Complete, waiting for next run...", ConsoleUtil.LogLevel.INFO);
         }
 
