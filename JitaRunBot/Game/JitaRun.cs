@@ -152,7 +152,10 @@ namespace JitaRunBot.Game
             if (_isRunActive)
                 _totalJumps++;
 
-            ConsoleUtil.WriteToConsole($"System Jump Detected: {_previousSystem.Name} -> {_currentSystem.Name} (jumps: {_totalJumps}|Active:{_isRunActive})", ConsoleUtil.LogLevel.INFO, ConsoleColor.Yellow);
+            var statusMsg =
+                $"System Jump Detected: {_previousSystem.Name} -> {_currentSystem.Name} (jumps: {_totalJumps}|Active:{_isRunActive})";
+            ConsoleUtil.WriteToConsole(statusMsg, ConsoleUtil.LogLevel.INFO, ConsoleColor.Yellow);
+            DiscordWebHookHandler.Instance.GetDiscordWebHook().SendToDiscord(new DiscordMessage(statusMsg)).Wait(2000);
 
             // Detect if we were in Jita, and we are now in a null-sec system.
             if ( _shipStatus == ShipStatusEnum.IN_JITA )
