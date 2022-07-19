@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using JNogueira.Discord.Webhook.Client;
+﻿using JNogueira.Discord.Webhook.Client;
 
 namespace JitaRunBot
 {

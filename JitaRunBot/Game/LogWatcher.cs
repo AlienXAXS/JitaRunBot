@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Linq;
-
-namespace JitaRunBot.Game
+﻿namespace JitaRunBot.Game
 {
     public delegate void OnFileChangedHandler(object source, FileContentsChanged e);
     public class FileContentsChanged : EventArgs

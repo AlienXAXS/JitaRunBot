@@ -1,12 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Net;
-using System.Net.Http.Headers;
 using JNogueira.Discord.Webhook.Client;
 using SimpleTCP;
-using System.Net.Sockets;
-using System.Security.Cryptography;
-using JitaRunBot;
-using System.Linq;
 using JitaRunBot.Twitch;
 
 namespace JitaRunBot

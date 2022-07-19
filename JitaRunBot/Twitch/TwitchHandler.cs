@@ -1,10 +1,5 @@
-﻿using System;
-using System.Runtime.CompilerServices;
-using System.Xml.Schema;
-using TwitchLib.Client;
-using TwitchLib.Client.Enums;
+﻿using TwitchLib.Client;
 using TwitchLib.Client.Events;
-using TwitchLib.Client.Extensions;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Clients;
 using TwitchLib.Communication.Models;

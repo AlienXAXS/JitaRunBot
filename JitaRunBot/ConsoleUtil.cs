@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace JitaRunBot
+﻿namespace JitaRunBot
 {
     public static class ConsoleUtil
     {
