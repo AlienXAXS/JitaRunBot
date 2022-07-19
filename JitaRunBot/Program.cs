@@ -18,6 +18,8 @@ namespace JitaRunBot
         private Game.LogWatcher _logWatcher;
         private Game.JitaRun _jitaRun;
 
+        private static string Version = "0.4.8";
+
         public static void Main()
         {
             ConsoleUtil.WriteToConsole("AGN JitaRun Bot Starting Up", ConsoleUtil.LogLevel.INFO, ConsoleColor.White);
@@ -74,6 +76,7 @@ namespace JitaRunBot
             }
             else
             {
+                Twitch.TwitchHandler.Instance.Connect();
                 ConsoleUtil.WriteToConsole($"[Twitch Auth] Registered as {Configuration.Handler.Instance.Config.TwitchUsername}", ConsoleUtil.LogLevel.INFO);
             }
 
@@ -128,7 +131,7 @@ namespace JitaRunBot
                                 fields: new[]
                                 {
                                     new DiscordMessageEmbedField("Bot Version",
-                                        $"[v0.4.7](https://github.com/AlienXAXS/JitaRunBot/releases)"),
+                                        $"[v{Version}](https://github.com/AlienXAXS/JitaRunBot/releases)"),
                                     new DiscordMessageEmbedField("Pilot Name",
                                         Configuration.Handler.Instance.Config.PilotName),
                                     new DiscordMessageEmbedField("Status", "Waiting for undock")
@@ -142,7 +145,6 @@ namespace JitaRunBot
 
             ConsoleUtil.WriteToConsole("\r\n\r\nNotice:\r\nThis application will only detect a new Jita Run from a DOCKED state.\r\nPlease ensure you undock AFTER starting the application.\r\nWhen your ship changes to IN_JITA state you're good to go!", ConsoleUtil.LogLevel.INFO, ConsoleColor.Black, ConsoleColor.Yellow);
 
-            Twitch.TwitchHandler.Instance.Connect();
 
             _quitAppEvent.WaitOne();
             _logWatcher.Dispose();

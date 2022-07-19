@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Xml.Schema;
 using TwitchLib.Client;
 using TwitchLib.Client.Enums;
@@ -10,7 +11,7 @@ using TwitchLib.Communication.Models;
 
 namespace JitaRunBot.Twitch
 {
-    public class TwitchHandler
+    public class TwitchHandler : IDisposable
     {
         public static TwitchHandler Instance = _instance ??= new TwitchHandler();
         private static readonly TwitchHandler? _instance;
@@ -46,35 +47,46 @@ namespace JitaRunBot.Twitch
 
         private void Client_OnConnected(object sender, OnConnectedArgs e)
         {
-            Console.WriteLine($"Connected to {e.AutoJoinChannel}");
+            ConsoleUtil.WriteToConsole($"[Twitch Bot] Connected to Twitch IRC", ConsoleUtil.LogLevel.INFO);
         }
 
         private void Client_OnJoinedChannel(object sender, OnJoinedChannelArgs e)
         {
-            Console.WriteLine("Hey guys! I am a bot connected via TwitchLib!");
-            //client.SendMessage(e.Channel, "Hey guys! I am a bot connected via TwitchLib!");
+            ConsoleUtil.WriteToConsole($"[Twitch Bot] Joined channel {e.Channel}", ConsoleUtil.LogLevel.INFO);
         }
 
         private void Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
         {
-            if (e.ChatMessage.Message.ToLower().StartsWith("!jr"))
-            {
-                client.SendMessage(e.ChatMessage.Channel, $"I am JitaRunBot - Running on {System.Environment.OSVersion}");
-            }
+
         }
 
         private void Client_OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
         {
-            if (e.WhisperMessage.Username == "my_friend")
-                client.SendWhisper(e.WhisperMessage.Username, "Hey! Whispers are so cool!!");
+
         }
 
         private void Client_OnNewSubscriber(object sender, OnNewSubscriberArgs e)
         {
-            if (e.Subscriber.SubscriptionPlan == SubscriptionPlan.Prime)
-                client.SendMessage(e.Channel, $"Welcome {e.Subscriber.DisplayName} to the substers! You just earned 500 points! So kind of you to use your Twitch Prime on this channel!");
-            else
-                client.SendMessage(e.Channel, $"Welcome {e.Subscriber.DisplayName} to the substers! You just earned 500 points!");
+
+        }
+
+        public void Dispose()
+        {
+            client.Disconnect();
+
+            var maxTries = 10;
+            var currentTry = 1;
+            while (client.IsConnected)
+            {
+                ConsoleUtil.WriteToConsole($"Attempting to disconnect from Twitch Chat IRC [{currentTry}/{maxTries}]", ConsoleUtil.LogLevel.INFO);
+                Thread.Sleep(1000);
+                ++currentTry;
+
+                if (currentTry > maxTries)
+                {
+                    return;
+                }
+            }
         }
     }
 }

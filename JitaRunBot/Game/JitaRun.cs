@@ -190,7 +190,7 @@ namespace JitaRunBot.Game
                                     {
                                         new DiscordMessageEmbedField("Pilot Name", Configuration.Handler.Instance.Config.PilotName),
                                         new DiscordMessageEmbedField("Status", "JitaRun Started"),
-                                        new DiscordMessageEmbedField("Starting System", $"[{_startingSystem.Name}](https://evemaps.dotlan.net/system/{_startingSystem.Name})")
+                                        new DiscordMessageEmbedField("Starting System", $"[{_startingSystem.Name}](https://evemaps.dotlan.net/system/{_startingSystem.Name}) ({_totalJumps} Jumps Ago)")
                                     }
                                 )
                             });

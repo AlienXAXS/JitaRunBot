@@ -68,11 +68,6 @@ namespace JitaRunBot.Twitch
 
             _httpServer.Stop();
         }
-
-        private void LogCallback(string message)
-        {
-            //ConsoleUtil.WriteToConsole($"TwitchOAuthServer -> {message}", ConsoleUtil.LogLevel.INFO);
-        }
     }
 
     internal class ExceptionInvalidCallback : Exception
