@@ -1,8 +1,8 @@
 ﻿namespace JitaRunBot
 {
-    public static class ConsoleUtil
+    public static class Util
     {
-        public static void WriteToConsole(string message, LogLevel logLevel, ConsoleColor foregroundColor = ConsoleColor.White, ConsoleColor backgroundColor = ConsoleColor.Black)
+        public static void Log(string message, LogLevel logLevel, ConsoleColor foregroundColor = ConsoleColor.White, ConsoleColor backgroundColor = ConsoleColor.Black)
         {
             Console.ForegroundColor = foregroundColor;
             Console.BackgroundColor = backgroundColor;
@@ -14,11 +14,11 @@
 
         public enum LogLevel
         {
-            INFO,
-            DEBUG,
-            WARN,
-            ERROR,
-            FATAL
+            Info,
+            Debug,
+            Warn,
+            Error,
+            Fatal
         }
     }
 }

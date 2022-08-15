@@ -41,14 +41,14 @@
                     return;
 
                 var previousLogFile = _currentLogFile;
-                ConsoleUtil.WriteToConsole($"New File detected in gamelogs {args.Name}. Ensuring we are reading it if required.", ConsoleUtil.LogLevel.INFO, ConsoleColor.Yellow);
+                Util.Log($"New File detected in gamelogs {args.Name}. Ensuring we are reading it if required.", Util.LogLevel.Info, ConsoleColor.Yellow);
                 if ( LocateCurrentLogFile() )
                 {
                     if ( previousLogFile != _currentLogFile )
                     {
-                        ConsoleUtil.WriteToConsole(" -> Reading this file now.", ConsoleUtil.LogLevel.INFO, ConsoleColor.Yellow);
+                        Util.Log(" -> Reading this file now.", Util.LogLevel.Info, ConsoleColor.Yellow);
                     } else {
-                        ConsoleUtil.WriteToConsole(" -> Not required, skipping.", ConsoleUtil.LogLevel.INFO, ConsoleColor.Yellow);
+                        Util.Log(" -> Not required, skipping.", Util.LogLevel.Info, ConsoleColor.Yellow);
                     }
                 }
             };

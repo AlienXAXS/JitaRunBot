@@ -29,7 +29,7 @@ namespace JitaRunBot.Configuration
                 }
             } catch (Exception ex)
             {
-                ConsoleUtil.WriteToConsole($"Fatal Error: {ex.Message}\r\n\r\n{ex.StackTrace}", ConsoleUtil.LogLevel.FATAL, ConsoleColor.Red);
+                Util.Log($"Fatal Error: {ex.Message}\r\n\r\n{ex.StackTrace}", Util.LogLevel.Fatal, ConsoleColor.Red);
             }
 
             Load();
@@ -53,7 +53,7 @@ namespace JitaRunBot.Configuration
                         // Check if the config version has changed, if so we save the new file.
                         if ( Config.ConfigVersion != ConfigVersion )
                         {
-                            ConsoleUtil.WriteToConsole("Warning: Configuration version change detected, please ensure new elements are filled in!", ConsoleUtil.LogLevel.WARN);
+                            Util.Log("Warning: Configuration version change detected, please ensure new elements are filled in!", Util.LogLevel.Warn);
                             Save();
                         }
 
@@ -75,7 +75,7 @@ namespace JitaRunBot.Configuration
                 }
             } catch (Exception ex)
             {
-                ConsoleUtil.WriteToConsole($"Fatal Error: {ex.Message}\r\n\r\n{ex.StackTrace}", ConsoleUtil.LogLevel.FATAL, ConsoleColor.Red);
+                Util.Log($"Fatal Error: {ex.Message}\r\n\r\n{ex.StackTrace}", Util.LogLevel.Fatal, ConsoleColor.Red);
             }
         }
 
@@ -90,7 +90,7 @@ namespace JitaRunBot.Configuration
                 }
             } catch (Exception ex)
             {
-                ConsoleUtil.WriteToConsole($"Fatal Error: {ex.Message}\r\n\r\n{ex.StackTrace}", ConsoleUtil.LogLevel.FATAL, ConsoleColor.Red);
+                Util.Log($"Fatal Error: {ex.Message}\r\n\r\n{ex.StackTrace}", Util.LogLevel.Fatal, ConsoleColor.Red);
             }
         }
     }
@@ -103,6 +103,8 @@ namespace JitaRunBot.Configuration
         public string? DiscordWebHookUrl { get; set; }
 
         private string? _twitchUsername;
+
+        public string? TwitchClientSecret { get; set; }
 
         [Serializable]
         public class LastKnownStateCls
@@ -137,6 +139,34 @@ namespace JitaRunBot.Configuration
                 if (!string.IsNullOrEmpty(value))
                 {
                     _twitchAuthToken = value;
+                    Handler.Instance?.Save();
+                }
+            }
+        }
+
+        private string? _twitchRefreshToken;
+        public string? TwitchRefreshToken
+        {
+            get => _twitchRefreshToken;
+            set
+            {
+                if (!string.IsNullOrEmpty(value))
+                {
+                    _twitchRefreshToken = value;
+                    Handler.Instance?.Save();
+                }
+            }
+        }
+
+        private DateTime? _twitchTokenExpiry;
+        public DateTime? TwitchTokenExpiry
+        {
+            get => _twitchTokenExpiry;
+            set
+            {
+                if (value != null)
+                {
+                    _twitchTokenExpiry = value;
                     Handler.Instance?.Save();
                 }
             }

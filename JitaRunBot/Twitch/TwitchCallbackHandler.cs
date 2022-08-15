@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Globalization;
 using System.Net;
 using NHttp;
 
@@ -8,7 +9,6 @@ namespace JitaRunBot.Twitch
     internal class TwitchCallbackHandler
     {
         private bool _hasRan = false;
-        private string _clientId = "4zj6ekjb1e6xmlv3m4jmzwi7vm3b5m";
 
         private HttpServer _httpServer;
         private readonly List<string> _scopes = new List<string>()
@@ -24,28 +24,34 @@ namespace JitaRunBot.Twitch
 
             _httpServer.RequestReceived += async (server, eventArgs) =>
             {
-                if (eventArgs.Request.QueryString.AllKeys.Any("access_token".Contains))
+                if (eventArgs.Request.QueryString.AllKeys.Any("access_token".Contains!))
                 {
-                    var code = eventArgs.Request.QueryString["access_token"];
-                    Configuration.Handler.Instance.Config.TwitchAuthToken = code;
+                    var accessToken = eventArgs.Request.QueryString["access_token"];
+                    var refreshToken = eventArgs.Request.QueryString["refresh_token"];
+                    var expiresIn = eventArgs.Request.QueryString["expires_in"];
 
-                    _hasRan = true;
+                    if ( long.TryParse(expiresIn, NumberStyles.Any, new DateTimeFormatInfo(), out var expiresInLong))
+                    {
+                        var dtEpoch = DateTime.Now.ToUniversalTime().AddSeconds(expiresInLong);
+
+                        Configuration.Handler.Instance.Config.TwitchAuthToken = accessToken;
+                        Configuration.Handler.Instance.Config.TwitchRefreshToken = refreshToken;
+                        Configuration.Handler.Instance.Config.TwitchTokenExpiry = dtEpoch;
+
+                        _hasRan = true;
+                    }
                 }
                 else
                 {
                     if (eventArgs.Request.Path.Equals("/oauth/callback"))
                     {
-                        using (var writer = new StreamWriter(eventArgs.Response.OutputStream))
-                        {
-                            writer.Write(
-                                @"<html><head><script language=""javascript"">for(var values,hash=window.location.hash.slice(1),array=hash.split(""&""),form_data={},i=0;i<array.length;i+=1)form_data[(values=array[i].split(""=""))[0]]=values[1];if(void 0!==form_data.access_token){var httpClient=new XMLHttpRequest,url=window.location.href.substring(0,window.location.href.search(""#""))+""?access_token=""+form_data.access_token;httpClient.open(""GET"",url),httpClient.send()}else console.log(""cannot find access_token"");</script></head><body>You may close this window now :)</body></html>");
-                        }
+                        await using var writer = new StreamWriter(eventArgs.Response.OutputStream);
+                        await writer.WriteAsync(@"<html><head><script language=""javascript"">for(var values,hash=window.location.hash.slice(1),array=hash.split(""&""),form_data={},i=0;i<array.length;i+=1)form_data[(values=array[i].split(""=""))[0]]=values[1];if(void 0!==form_data.access_token){var httpClient=new XMLHttpRequest,url=window.location.href.substring(0,window.location.href.search(""#""))+""?access_token=""+form_data.access_token;httpClient.open(""GET"",url),httpClient.send()}else console.log(""cannot find access_token"");</script></head><body>You may close this window now :)</body></html>");
                     }
                 }
 
                 if (eventArgs.Request.QueryString.AllKeys.Any("error_message".Contains))
                 {
-
                     _hasRan = true;
                 }
             };
@@ -53,7 +59,7 @@ namespace JitaRunBot.Twitch
             _httpServer.Start();
 
             myProcess.StartInfo.UseShellExecute = true;
-            myProcess.StartInfo.FileName = $"https://id.twitch.tv/oauth2/authorize?response_type=token&client_id={_clientId}&redirect_uri=http://localhost:57754/oauth/callback&scope={String.Join("+", _scopes)}";
+            myProcess.StartInfo.FileName = $"https://id.twitch.tv/oauth2/authorize?response_type=code&client_id={TwitchHandler.Instance.Auth.ClientId}&redirect_uri=http://localhost:57754/oauth/callback&scope={String.Join("+", _scopes)}";
             myProcess.Start();
 
             TaskEx.WaitUntil(() => _hasRan).Wait();
